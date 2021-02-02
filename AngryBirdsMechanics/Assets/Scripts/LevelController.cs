@@ -5,6 +5,8 @@ using UnityEngine;
 public class LevelController : MonoBehaviour
 {
     [SerializeField] GameObject[] levelPrefabs;
+
+    GameObject level;
     int levelIndx = 0;
 
     void Start()
@@ -12,17 +14,17 @@ public class LevelController : MonoBehaviour
         CreateLevel();
     }
 
-
-    void Update()
-    {
-        
-    }
-
     void CreateLevel() 
     {
-        Instantiate(levelPrefabs[levelIndx], gameObject.transform);
+        level = Instantiate(levelPrefabs[levelIndx], gameObject.transform);
         levelIndx++;
         if (levelIndx == 3)
             levelIndx = 0;
+    }
+
+    public void CreateNewLevel() 
+    {
+        Destroy(level);
+        CreateLevel();
     }
 }

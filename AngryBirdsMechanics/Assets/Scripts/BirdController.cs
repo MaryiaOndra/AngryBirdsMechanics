@@ -3,35 +3,68 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class BirdController : MonoBehaviour
 {
     [SerializeField] GameObject birdPrefab;
-    Bird bird;
+    [SerializeField] Text pastCounter;
 
-    public event Action CreateNewBird;
+    GameObject createdBird;
+    float delay = 1f;
+    float remainingTime;
+    int pastBirds;
+
+    Action timerEndAction;
 
     void Start()
     {
-        ShootBird();
+        CreateBird();
     }
 
     void Update()
     {
-        if (bird.IsBirdDragEnd) 
-        {            
-            ShootBird();        
+        if (remainingTime > 0)
+        {
+            remainingTime -= Time.deltaTime;
+            if (remainingTime <= 0)
+            {
+                remainingTime = 0;
+                timerEndAction.Invoke();
+            }
         }
     }
 
-    void PrepareBird() 
+    public void CatchBall() 
     {
-          GameObject _activeBird = Instantiate(birdPrefab, gameObject.transform);
-          bird = _activeBird.GetComponent<Bird>();
+        LevelController levelController = GameObject.FindObjectOfType<LevelController>();
+        StartTimer(delay / 2, levelController.CreateNewLevel);
+
+        if (!createdBird.activeSelf)
+        {
+            CreateBird();
+        }
+
+        pastBirds = 0;
+        pastCounter.text = pastBirds.ToString();
     }
 
-    void ShootBird() 
+    public void CreateNextBird() 
     {
+        StartTimer(delay, CreateBird);
 
+        pastBirds++;
+        pastCounter.text = pastBirds.ToString();
+    }
+
+    private void CreateBird() 
+    {
+        createdBird = Instantiate(birdPrefab, gameObject.transform);
+    }
+
+    void StartTimer(float time, Action action) 
+    {
+        remainingTime = time;
+        timerEndAction = action;
     }
 }

@@ -7,19 +7,18 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bird : MonoBehaviour
 {
-    const float MAX_FORCE = 20;
+    const float MAX_FORCE = 12;
 
     Rigidbody2D rBody2D;
+    BirdController birdController;
     Vector2 startPos;
-    float timeLimit = 3f;
-
-    public bool IsBirdDragEnd { get; private set; }
-    public event Action NextBird;
+    float lifeTime = 3f;
 
     private void Awake()
     {
         rBody2D = GetComponent<Rigidbody2D>();
         rBody2D.bodyType = RigidbodyType2D.Static;
+        birdController = FindObjectOfType<BirdController>();
     }
 
     public void OnDragBegin(BaseEventData _evData)
@@ -30,7 +29,7 @@ public class Bird : MonoBehaviour
 
     public void OnDragEnd(BaseEventData _evData) 
     {
-        IsBirdDragEnd = true;
+        birdController.CreateNextBird();
 
         var _pointerEv = _evData as PointerEventData;
         var _direction = (_pointerEv.position - startPos).normalized * -1;
@@ -42,9 +41,12 @@ public class Bird : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent(out Ball _))
         {
-            Debug.Log("TOUCHDOWN");
+            birdController.CatchBall();
+            Destroy(gameObject);
         }
-
-        Destroy(gameObject, timeLimit);
+        else if (!collision.gameObject.TryGetComponent(out Bird _))
+        {
+            Destroy(gameObject, lifeTime);
+        }
     }
 }
