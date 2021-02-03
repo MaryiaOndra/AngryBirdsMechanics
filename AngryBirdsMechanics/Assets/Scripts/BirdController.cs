@@ -1,69 +1,69 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class BirdController : MonoBehaviour
+namespace AngryBirdMechanics
 {
-    [SerializeField] GameObject birdPrefab;
-    [SerializeField] Text pastCounter;
-
-    GameObject createdBird;
-    float delay = 1f;
-    float remainingTime;
-    int pastBirds;
-
-    Action timerEndAction;
-
-    void Start()
+    public class BirdController : MonoBehaviour
     {
-        CreateBird();
-    }
+        [SerializeField] GameObject birdPrefab;
+        [SerializeField] Text pastCounter;
 
-    void Update()
-    {
-        if (remainingTime > 0)
-        {
-            remainingTime -= Time.deltaTime;
-            if (remainingTime <= 0)
-            {
-                remainingTime = 0;
-                timerEndAction.Invoke();
-            }
-        }
+        GameObject createdBird;
+        float delay = 1f;
+        float remainingTime;
+        int pastBirds;
 
-        if (createdBird == null)
+        Action timerEndAction;
+
+        void Start()
         {
             CreateBird();
         }
-    }
 
-    public void CatchBall() 
-    {
-        LevelController levelController = GameObject.FindObjectOfType<LevelController>();
-        StartTimer(delay / 2, levelController.CreateNewLevel);
-        pastBirds = 0;
-        pastCounter.text = pastBirds.ToString();
-    }
+        void Update()
+        {
+            if (remainingTime > 0)
+            {
+                remainingTime -= Time.deltaTime;
+                if (remainingTime <= 0)
+                {
+                    remainingTime = 0;
+                    timerEndAction.Invoke();
+                }
+            }
 
-    public void CreateNextBird() 
-    {
-        StartTimer(delay, CreateBird);
+            if (createdBird == null)
+            {
+                CreateBird();
+            }
+        }
 
-        pastBirds++;
-        pastCounter.text = pastBirds.ToString();
-    }
+        public void CatchBall()
+        {
+            LevelController levelController = GameObject.FindObjectOfType<LevelController>();
+            StartTimer(delay / 2, levelController.CreateNewLevel);
+            pastBirds = 0;
+            pastCounter.text = pastBirds.ToString();
+        }
 
-    private void CreateBird() 
-    {
-        createdBird = Instantiate(birdPrefab, gameObject.transform);
-    }
+        public void CreateNextBird()
+        {
+            StartTimer(delay, CreateBird);
 
-    void StartTimer(float time, Action action) 
-    {
-        remainingTime = time;
-        timerEndAction = action;
+            pastBirds++;
+            pastCounter.text = pastBirds.ToString();
+        }
+
+        private void CreateBird()
+        {
+            createdBird = Instantiate(birdPrefab, gameObject.transform);
+        }
+
+        void StartTimer(float time, Action action)
+        {
+            remainingTime = time;
+            timerEndAction = action;
+        }
     }
 }

@@ -1,26 +1,44 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class TrajectoryRenderer : MonoBehaviour
+namespace AngryBirdMechanics
 {
-    private LineRenderer lineRendererComp;
-
-    void Start()
+    [RequireComponent(typeof(LineRenderer))]
+    public class TrajectoryRenderer : MonoBehaviour
     {
-        lineRendererComp = GetComponent<LineRenderer>();
-    }
+        [SerializeField] int pontsInt;
+        private LineRenderer lineRendererComp;
 
-    public void ShowTrajectory(Vector3 origin, Vector3 speed) 
-    {
-        Vector3[] points = new Vector3[100];
-
-        for (int i = 0; i < points.Length; i++)
+        void Start()
         {
-            float _time = i * 0.1f;
-            points[i] = origin + speed * _time + Physics.gravity * _time * _time / 2f;
+            lineRendererComp = GetComponent<LineRenderer>();
+            HideTrajectory();
         }
 
-        lineRendererComp.SetPositions(points);
+        public void ShowTrajectory(Vector3 origin, Vector3 speed)
+        {
+            lineRendererComp.enabled = true;
+
+            Vector3[] points = new Vector3[100];
+            lineRendererComp.positionCount = points.Length;
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                float _time = i * 0.1f;
+                points[i] = origin + speed * _time + Physics.gravity * _time * _time / 2f;
+
+                if (points[i].y < -2 || points[i].y > 4)
+                {
+                    lineRendererComp.positionCount = i;
+                    break;
+                }
+            }
+
+            lineRendererComp.SetPositions(points);
+        }
+
+        public void HideTrajectory()
+        {
+            lineRendererComp.enabled = false;
+        }
     }
 }
