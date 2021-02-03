@@ -33,18 +33,17 @@ public class BirdController : MonoBehaviour
                 timerEndAction.Invoke();
             }
         }
+
+        if (createdBird == null)
+        {
+            CreateBird();
+        }
     }
 
     public void CatchBall() 
     {
         LevelController levelController = GameObject.FindObjectOfType<LevelController>();
         StartTimer(delay / 2, levelController.CreateNewLevel);
-
-        if (!createdBird.activeSelf)
-        {
-            CreateBird();
-        }
-
         pastBirds = 0;
         pastCounter.text = pastBirds.ToString();
     }
